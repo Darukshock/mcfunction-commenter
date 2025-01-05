@@ -16,7 +16,7 @@ Coming soon
 
 ## Known Issues
 No issues found yet
-Until a proper repository is set up, you can DM me on discord: @darukshock
+You can report them on the [repository](https://github.com/Darukshock/mcfunction-commenter/issues)
 ## Release Notes
 
 ### 1.0.0
