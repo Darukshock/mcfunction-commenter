@@ -21,5 +21,9 @@ You can report them on the [repository](https://github.com/Darukshock/mcfunction
 
 ### 1.0.0
 
-Initial release of mcfunction commenter<br>
-Command Declare Origins basic functionnality was implemented
+- Initial release of mcfunction commenter
+- Command Declare Origins basic functionnality was implemented
+
+### 1.0.1
+Removed debug messages<br>
+Removed error when no origins functions were found

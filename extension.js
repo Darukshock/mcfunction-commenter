@@ -48,10 +48,16 @@ function activate(context) {
 
         // If the "data" folder exists
 		let functionID = pathToFunctionID(filePath, folderPath);
-        vscode.window.showInformationMessage('ID = ' + functionID);
+        // 1.0.1: Removed debug message
+        // vscode.window.showInformationMessage('ID = ' + functionID);
 
 		// Functions calling this one
 		let callers = searchInDir(`function ${functionID}`, folderPath);
+        // 1.0.1: Return if search failed
+        if(!callers[0]){
+            vscode.window.showInformationMessage('No origin function were found');
+            return;
+        }
 		let comment = "#> from: ";
 		for(const caller of await callers) {
 			// vscode.window.showInformationMessage('Caller = ' + caller);
@@ -64,7 +70,8 @@ function activate(context) {
 			}
 		}
 		comment = comment.slice(0,comment.length-2);
-        vscode.window.showInformationMessage('COMMENT = ' + comment);
+        // 1.0.1: Removed debug message
+        // vscode.window.showInformationMessage('COMMENT = ' + comment);
 		prependComment(filePath, comment);
     });
 
