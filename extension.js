@@ -52,13 +52,15 @@ function activate(context) {
         // vscode.window.showInformationMessage('ID = ' + functionID);
 
 		// Functions calling this one
-		let callers = searchInDir(`function ${functionID}`, folderPath);
+		let callers = await searchInDir(`function ${functionID}`, folderPath);
+        console.log(`scanning for function ${functionID} in ${folderPath}`);
         // 1.0.1: Return if search failed
         if(!callers[0]){
             vscode.window.showInformationMessage('No origin function were found');
             return;
         }
 		let comment = "#> from: ";
+        // 1.0.2: Idk javascript, but adding 'await' fixed no finding anything.
 		for(const caller of await callers) {
 			// vscode.window.showInformationMessage('Caller = ' + caller);
 			if(caller == filePath) {
