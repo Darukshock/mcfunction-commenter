@@ -55,7 +55,8 @@ function activate(context) {
 		let callers = await searchInDir(`function ${functionID}`, folderPath);
         console.log(`scanning for function ${functionID} in ${folderPath}`);
         // 1.0.1: Return if search failed
-        if(!callers[0]){
+        // 1.0.3 check for callers instead of callers[0]
+        if(!callers){
             vscode.window.showInformationMessage('No origin function were found');
             return;
         }

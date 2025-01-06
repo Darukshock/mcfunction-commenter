@@ -25,5 +25,15 @@ You can report them on the [repository](https://github.com/Darukshock/mcfunction
 - Command Declare Origins basic functionnality was implemented
 
 ### 1.0.1
-Removed debug messages<br>
+Removed debug messages
+
+### 1.0.3
 Removed error when no origins functions were found
+
+
+## TODO
+- Config
+  - Multiline
+  - Customise 'this'
+  - Comment position / condition
+- Detect from advancements, tags etc...

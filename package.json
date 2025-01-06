@@ -5,7 +5,7 @@
   "name": "mcfunction-commenter",
   "displayName": "Mcfunction Commenter",
   "description": "",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.96.0"
   },
