@@ -30,6 +30,10 @@ Removed debug messages
 ### 1.0.3
 Removed error when no origins functions were found
 
+### 1.0.4
+Smarter filtering:
+```function foo:bar/qux```
+no longer counts as calling `foo:bar`
 
 ## TODO
 - Config

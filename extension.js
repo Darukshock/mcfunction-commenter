@@ -61,8 +61,7 @@ function activate(context) {
             return;
         }
 		let comment = "#> from: ";
-        // 1.0.2: Idk javascript, but adding 'await' fixed no finding anything.
-		for(const caller of await callers) {
+		for(const caller of callers) {
 			// vscode.window.showInformationMessage('Caller = ' + caller);
 			if(caller == filePath) {
 				// Insert "this, " right after "#> from: "
@@ -119,8 +118,11 @@ async function searchInDir(s, dir) {
             // Read file content
             const content = await fs.readFile(file.fsPath, 'utf8');
 
+            const regex = new RegExp(`${s}(?![a-z/.])`);
             // Search for the string
-            if (content.includes(s)) {
+            // 1.0.4 Use regex to avoid matching other functions
+            // Now "function foo:bar/qux" doesn't match for "function foo:bar"
+            if (regex.test(content)) {
                 matches.push(file.fsPath);
             }
         }
