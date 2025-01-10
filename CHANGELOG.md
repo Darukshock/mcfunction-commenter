@@ -1,3 +1,6 @@
+### 1.1.3
+Moved changelog to the proper location
+
 ### 1.1.2
 Added description for from.separator config
 
