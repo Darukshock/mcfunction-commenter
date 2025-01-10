@@ -1,9 +1,23 @@
-# Change Log
+### 1.1.2
+Added description for from.separator config
 
-All notable changes to the "mcfunction-commenter" extension will be documented in this file.
+### 1.1.1
+Fixed detecting function tags that call a function tag with the same id as the current function
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## 1.1.0
+Now tests for function tags
 
-## [Unreleased]
+### 1.0.4
+Smarter filtering:
+```function foo:bar/qux```
+no longer counts as calling `foo:bar`
 
-- Initial release
+### 1.0.3
+Removed error when no origins functions were found
+
+### 1.0.1
+Removed debug messages
+
+# 1.0.0
+- Initial release of mcfunction commenter
+- Command Declare Origins basic functionnality was implemented
