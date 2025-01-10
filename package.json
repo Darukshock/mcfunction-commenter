@@ -20,7 +20,15 @@
         "command": "mcfunction-commenter.declare-origins",
         "title": "Declare Origins"
       }
-    ]
+    ],
+    "configuration": {
+      "properties": {
+        "mcfunction-commenter.separator": {
+          "type": "string",
+          "default": ", "
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

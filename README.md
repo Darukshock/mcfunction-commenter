@@ -35,6 +35,10 @@ Smarter filtering:
 ```function foo:bar/qux```
 no longer counts as calling `foo:bar`
 
+### 1.1.0
+Now tests for function tags
+### 1.1.1
+Fixed detecting function tags that call a function tag with the same id as the current function
 ## TODO
 - Config
   - Multiline

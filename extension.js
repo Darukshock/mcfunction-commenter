@@ -11,11 +11,10 @@ const fs = require('fs').promises;
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-    console.log('My Extension "mcfunction-commenter" is now active!');
+    // console.log('My Extension "mcfunction-commenter" is now active!');
 
     const disposable = vscode.commands.registerCommand('mcfunction-commenter.declare-origins', async function () {
         const editor = vscode.window.activeTextEditor;
-
         // Check for mcfunction
         if (!editor || !editor.document.fileName.endsWith('.mcfunction')) {
             vscode.window.showErrorMessage("File is not an mcfunction file.");
@@ -40,38 +39,50 @@ function activate(context) {
         // Check for datapack
         try {
             await fs.access(`${folderPath}/data`);
-            console.log('We are in a datapack.');
+            // console.log('We are in a datapack.');
         } catch (err) {
             vscode.window.showErrorMessage(`Folder "data" does not exist in "${folderPath}".`);
             return;
         }
-
+        // Init flags & comment
+		let comment = "#> from: ";
         // If the "data" folder exists
 		let functionID = pathToFunctionID(filePath, folderPath);
-        // 1.0.1: Removed debug message
-        // vscode.window.showInformationMessage('ID = ' + functionID);
-
+        // Parts of the comment
+        let parts = [];
 		// Functions calling this one
 		let callers = await searchInDir(`function ${functionID}`, folderPath);
-        console.log(`scanning for function ${functionID} in ${folderPath}`);
-        // 1.0.1: Return if search failed
-        // 1.0.3 check for callers instead of callers[0]
-        if(!callers){
-            vscode.window.showInformationMessage('No origin function were found');
-            return;
+        // Function tag calling this one
+        let tagCallers = await searchInDir(functionID, folderPath, '**/tags/function/**.json');
+        if(tagCallers) {
+            for(const tagCaller of tagCallers) {
+                parts.push(pathToFunctionTagID(tagCaller, folderPath));
+            }
         }
-		let comment = "#> from: ";
-		for(const caller of callers) {
-			// vscode.window.showInformationMessage('Caller = ' + caller);
-			if(caller == filePath) {
-				// Insert "this, " right after "#> from: "
-				comment = [comment.slice(0, 9), "this, ", comment.slice(9)].join('');
-			}
-			else {
-				comment += (pathToFunctionID(caller, folderPath) + ", ");
-			}
-		}
-		comment = comment.slice(0,comment.length-2);
+        else{
+            vscode.window.showInformationMessage('No origin function tag were found');
+        }
+        if(callers) {
+            for(const caller of callers) {
+                parts.push(pathToFunctionID(caller, folderPath));
+            }
+        }
+        else{
+            vscode.window.showInformationMessage('No origin function were found');
+        }
+        for(const part of parts) {
+            // check if it's called recursively
+            if(part == pathToFunctionID(filePath, folderPath)) {
+                // Insert "this, " right after "#> from: "
+                comment = [comment.slice(0, 9), "this"+getSeparator(), comment.slice(9)].join('');
+            }
+            else {
+                // 1.1.0: configure separator
+                comment += (part + getSeparator());
+            }
+        }
+		// Remove last separator
+		comment = comment.slice(0,comment.length-getSeparator().length);
         // 1.0.1: Removed debug message
         // vscode.window.showInformationMessage('COMMENT = ' + comment);
 		prependComment(filePath, comment);
@@ -93,10 +104,32 @@ function pathToFunctionID(filePath, folderPath) {
 	return `${namespace}:${relativePath.slice(namespace.length+10).replaceAll('\\','/')}`;
 }
 /**
+ * @param {string} filePath path to the function tag file
+ * @param {string} folderPath path to the workspace folder
+ */
+function pathToFunctionTagID(filePath, folderPath) {
+	// Example: namespace/tags/function/load.json
+	let relativePath = filePath.slice(folderPath.length+6)
+	// Example: namespace/tags/function/load
+	relativePath = relativePath.slice(0,relativePath.length-5)
+    // Example: namespace
+	let namespace = relativePath.substring(0,relativePath.indexOf('\\'));
+    // Example: #namespace:load
+    // console.log(`[pathToFunctionTagID] returned '#${namespace}:${relativePath.slice(namespace.length+15).replaceAll('\\','/')}'`);
+	return `#${namespace}:${relativePath.slice(namespace.length+15).replaceAll('\\','/')}`;
+}
+/**
+ * @returns {String} Separator setting with proper escape characters
+ */
+function getSeparator() {
+    return vscode.workspace.getConfiguration().get("mcfunction-commenter.separator").replaceAll('\\n','\n');
+}
+/**
  * @param {string} s the string
  * @param {string} dir the directory
+ * @param {string} pat the pattern the file path should match
  */
-async function searchInDir(s, dir) {
+async function searchInDir(s, dir, pat = '**/*.mcfunction') {
 	try {
         // Ensure the folder exists
         const folderUri = vscode.Uri.file(dir);
@@ -104,7 +137,7 @@ async function searchInDir(s, dir) {
         // Search for all .mcfunction files in the folder
         const files = await vscode.workspace.findFiles(
             // @ts-ignore
-            { base: folderUri.fsPath, pattern: '**/*.mcfunction' } // Match .mcfunction files
+            { base: folderUri.fsPath, pattern: pat } // Match .mcfunction files
         );
 
         if (files.length === 0) {
@@ -118,7 +151,7 @@ async function searchInDir(s, dir) {
             // Read file content
             const content = await fs.readFile(file.fsPath, 'utf8');
 
-            const regex = new RegExp(`${s}(?![a-z/.])`);
+            const regex = new RegExp(`(?<!#)${s}(?![a-z/._])`);
             // Search for the string
             // 1.0.4 Use regex to avoid matching other functions
             // Now "function foo:bar/qux" doesn't match for "function foo:bar"
@@ -128,12 +161,13 @@ async function searchInDir(s, dir) {
         }
 
         if (matches.length > 0) {
-            console.log(
+            // console.log(
                 `Found "${s}" in the following files:\n${matches.join('\n')}`
             );
 			return matches;
         } else {
-            vscode.window.showInformationMessage(`"${s}" not found in any files.`);
+            // console.log(`"${s}" not found in any files.`);
+            return [];
         }
     } catch (err) {
         vscode.window.showErrorMessage(`Error: ${err.message}`);
@@ -150,7 +184,7 @@ async function prependComment(filePath, comment) {
 
         // Check if the file already contains the specific string
         if (content.includes('#> from: ')) {
-            console.log(`The file "${filePath}" already contains "#> from: ". No changes made.`);
+            // console.log(`The file "${filePath}" already contains "#> from: ". No changes made.`);
             return;
         }
 
@@ -159,7 +193,7 @@ async function prependComment(filePath, comment) {
 
         // Write the updated content back to the file
         await fs.writeFile(filePath, newContent, 'utf8');
-        console.log(`Successfully prepended line to "${filePath}".`);
+        // console.log(`Successfully prepended line to "${filePath}".`);
     } catch (error) {
         console.error(`Error handling file "${filePath}":`, error.message);
     }
