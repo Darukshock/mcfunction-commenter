@@ -23,9 +23,10 @@
     ],
     "configuration": {
       "properties": {
-        "mcfunction-commenter.separator": {
+        "mcfunction-commenter.from.separator": {
           "type": "string",
-          "default": ", "
+          "default": ", ",
+          "description": "a string that will get inserted between each source in the 'from' comment"
         }
       }
     }

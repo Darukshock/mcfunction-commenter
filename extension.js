@@ -122,7 +122,7 @@ function pathToFunctionTagID(filePath, folderPath) {
  * @returns {String} Separator setting with proper escape characters
  */
 function getSeparator() {
-    return vscode.workspace.getConfiguration().get("mcfunction-commenter.separator").replaceAll('\\n','\n');
+    return vscode.workspace.getConfiguration().get("mcfunction-commenter.from.separator").replaceAll('\\n','\n');
 }
 /**
  * @param {string} s the string
@@ -161,7 +161,7 @@ async function searchInDir(s, dir, pat = '**/*.mcfunction') {
         }
 
         if (matches.length > 0) {
-            // console.log(
+            console.log(
                 `Found "${s}" in the following files:\n${matches.join('\n')}`
             );
 			return matches;

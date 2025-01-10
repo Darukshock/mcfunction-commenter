@@ -39,6 +39,8 @@ no longer counts as calling `foo:bar`
 Now tests for function tags
 ### 1.1.1
 Fixed detecting function tags that call a function tag with the same id as the current function
+### 1.1.2
+Added description for from.separator config
 ## TODO
 - Config
   - Multiline
