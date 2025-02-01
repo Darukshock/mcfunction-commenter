@@ -38,10 +38,10 @@ function activate(context) {
 
         // Check for datapack
         try {
-            await fs.access(`${folderPath}/data`);
+            await fs.access(`${folderPath}/${getDataPath()}`);
             // console.log('We are in a datapack.');
         } catch (err) {
-            vscode.window.showErrorMessage(`Folder "data" does not exist in "${folderPath}".`);
+            vscode.window.showErrorMessage(`Folder "${getDataPath()}" does not exist in "${folderPath}".`);
             return;
         }
         // Init flags & comment
@@ -97,7 +97,7 @@ function activate(context) {
  */
 function pathToFunctionID(filePath, folderPath) {
 	// Example: namespace/function/load.mcfunction
-	let relativePath = filePath.slice(folderPath.length+6)
+	let relativePath = filePath.slice(folderPath.length+getDataPath().length+2)
 	// Example: namespace/function/load
 	relativePath = relativePath.slice(0,relativePath.length-11)
 	let namespace = relativePath.substring(0,relativePath.indexOf('\\'));
@@ -123,6 +123,12 @@ function pathToFunctionTagID(filePath, folderPath) {
  */
 function getSeparator() {
     return vscode.workspace.getConfiguration().get("mcfunction-commenter.from.separator").replaceAll('\\n','\n');
+}
+/**
+ * @returns {String} Data path setting with all \ replaced by /
+ */
+function getDataPath() {
+    return vscode.workspace.getConfiguration().get("mcfunction-commenter.global.data_path").replaceAll('\\','/');
 }
 /**
  * @param {string} s the string

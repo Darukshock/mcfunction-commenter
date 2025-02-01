@@ -1,3 +1,6 @@
+### 1.2.0
+Added a config to specify where to look for the `data` folder in the workspace.
+
 ### 1.1.3
 Moved changelog to the proper location
 

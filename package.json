@@ -27,6 +27,11 @@
           "type": "string",
           "default": ", ",
           "description": "a string that will get inserted between each source in the 'from' comment"
+        },
+        "mcfunction-commenter.global.data_path": {
+          "type": "string",
+          "default": "data",
+          "description": "the directory to link the opened folder and the datapack.\nfor instance, if you have opened `C:Users/thing`, and your targeted pack's pack.mcmeta is in `C:Users/thing/foo/bar`, this config should be foo/bar/data "
         }
       }
     }
